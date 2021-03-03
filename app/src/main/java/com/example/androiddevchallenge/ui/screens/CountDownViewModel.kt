@@ -12,17 +12,38 @@ import java.util.*
 
 class CountDownViewModel : ViewModel() {
 
-    val stateFlow: MutableStateFlow<CountDownViewState>  = MutableStateFlow(CountDownViewState())
+    val stateFlow: MutableStateFlow<CountDownViewState>  = MutableStateFlow(CountDownViewState.Default)
     var  timerJob: Job? = null
+
+
     fun onTimerSet(timeMs: Long) {
-        stateFlow.value = stateFlow.value.copy(timerTime = timeMs, isActive = true)
+        stateFlow.value = CountDownViewState.Active(timeMs, timeMs)
         timerJob?.cancel()
-        timerJob = viewModelScope.launch {
-            createTickFlow().collect {
-                stateFlow.value = stateFlow.value.copy(timerTime = stateFlow.value.timerTime - 1000L)
+        timerJob = createTickAndSubscribe()
+    }
+
+    fun onPauseButtonClicked() {
+        timerJob?.cancel()
+        stateFlow.value = CountDownViewState.Paused(stateFlow.value.timeRemains, stateFlow.value.timerTime)
+    }
+
+    fun onResumeButtonClicked() {
+        timerJob = createTickAndSubscribe()
+        stateFlow.value = CountDownViewState.Active(stateFlow.value.timeRemains, stateFlow.value.timerTime)
+
+    }
+
+
+    private fun createTickAndSubscribe() = viewModelScope.launch {
+        createTickFlow().collect {
+            val remains = stateFlow.value.timeRemains
+            if (remains <= 0) {
+                stateFlow.value = CountDownViewState.Default
+            } else {
+                val current = stateFlow.value.timeRemains
+                stateFlow.value = CountDownViewState.Active(timeRemains = current - 1000L, stateFlow.value.timerTime)
             }
         }
-
     }
 
     private fun createTickFlow(period: Long = 1000L) = callbackFlow<Unit>{
