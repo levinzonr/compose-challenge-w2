@@ -27,6 +27,12 @@ class CountDownViewModel : ViewModel() {
         stateFlow.value = CountDownViewState.Paused(stateFlow.value.timeRemains, stateFlow.value.timerTime)
     }
 
+    fun onStopButtonPressed() {
+        timerJob?.cancel()
+        stateFlow.value = CountDownViewState.Default
+
+    }
+
     fun onResumeButtonClicked() {
         timerJob = createTickAndSubscribe()
         stateFlow.value = CountDownViewState.Active(stateFlow.value.timeRemains, stateFlow.value.timerTime)
