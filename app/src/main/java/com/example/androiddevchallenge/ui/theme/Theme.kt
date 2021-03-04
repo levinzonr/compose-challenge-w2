@@ -18,20 +18,19 @@ package com.example.androiddevchallenge.ui.theme
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val LightColorPalette = lightColors(
-    primary = purple500,
+private val LightColorPalette = darkColors(
+    primary = lightGreen,
     primaryVariant = purple700,
-    secondary = teal200,
-    background = Color.White,
-    surface = Color.White,
+    secondary = blue,
+    background = darkGreen,
+    surface = lightGreen,
     onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
+    onSecondary = Color.White,
+    onBackground = lightGreen,
+    onSurface = Color.White,
 )
 
 @Composable
@@ -39,7 +38,7 @@ fun MyTheme(darkTheme: Boolean = isSystemInDarkTheme(), content: @Composable() (
 
     MaterialTheme(
         colors = LightColorPalette,
-        typography = typography,
+        typography = appTypography,
         shapes = shapes,
         content = content
     )
